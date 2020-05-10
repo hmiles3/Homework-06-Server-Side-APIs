@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Weather Dashboard</title>
+</head>
+
+<body>
+<header>Weather Dashboard</header>
+  <h1 class="city"></h1>
+  <div class="temp"></div>
+  <div class="humidity"></div>
+  <div class="wind"></div>
+  <div class="uvi"></div>
+
+  <h1>5-Day Forecast:</h1>
+  <div id="fiveday">
+	<div class="card" style="width: 18rem;">
+		<div class="card-body" id="fivedaycard">
+			  <p class = "date0"></p>
+			  <p class = "icon0"></p>
+			  <p class = "temp0"></p>
+			  <p class = "humidity0"></p>
+		</div>
+	  </div>
+	  <div class="card" style="width: 18rem;">
+		<div class="card-body" id="fivedaycard">
+			  <p class = "date1"></p>
+			  <p class = "icon1"></p>
+			  <p class = "temp1"></p>
+			  <p class = "humidity1"></p>
+		</div>
+	  </div>
+	  <div class="card" style="width: 18rem;">
+		<div class="card-body" id="fivedaycard">
+			  <p class = "date2"></p>
+			  <p class = "icon2"></p>
+			  <p class = "temp2"></p>
+			  <p class = "humidity2"></p>
+		</div>
+	  </div>
+	  <div class="card" style="width: 18rem;">
+		<div class="card-body" id="fivedaycard">
+			  <p class = "date3"></p>
+			  <p class = "icon3"></p>
+			  <p class = "temp3"></p>
+			  <p class = "humidity3"></p>
+		</div>
+	  </div>
+	  <div class="card" style="width: 18rem;">
+		<div class="card-body" id="fivedaycard">
+			  <p class = "date4"></p>
+			  <p class = "icon4"></p>
+			  <p class = "temp4"></p>
+			  <p class = "humidity4"></p>
+		</div>
+	  </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css" />
+  <script type="text/javascript">
+  	var apikey="0cf8a2c1eaf78668db021a6005cd9d3d";
+
+function oneday(city){
+	var onedayURL="https://api.openweathermap.org/data/2.5/weather?q="+city+"&appid="+apikey
+
+	$.ajax({
+      url: onedayURL,
+      method: "GET"
+    })
+      .then(function(response) {
+
+		var temp=response.main.temp;
+		var tempF=Math.round(10*((temp-273.15)*(9/5)+32))/10
+		var humidity=response.main.humidity
+		var windSpeed=response.wind.speed
+		var capCity=city.charAt(0).toUpperCase() + city.slice(1)
+		$(".temp").text("Temperature: "+tempF+" °F");
+		$(".humidity").text("Humidity: "+humidity+"%")
+		$(".wind").text("Wind Speed: "+windSpeed+" MPH")
+			var lon=response.coord.lon;
+			var lat=response.coord.lat;
+			var uvURL="http://api.openweathermap.org/data/2.5/uvi?appid="+apikey+"&lat="+lat+"&lon="+lon;
+			
+
+	$.ajax({
+      url: uvURL,
+      method: "GET"
+    })
+      .then(function(uvObject) {
+		var uv=uvObject.value;
+		var date=uvObject.date_iso
+		$(".city").text(capCity+" ("+date+")")
+        $(".uvi").text("UV Index: "+uv)
+
+	  });
+	  
+
+      });
+	
+
+}
+var userInput = prompt("Search for a city:")
+oneday(userInput);
+
+
+function fiveday(city){
+ var fivedayURL="https://api.openweathermap.org/data/2.5/forecast?q="+city+"&appid="+apikey
+
+ $.ajax({
+      url: fivedayURL,
+      method: "GET"
+	})
+	.then(function(fivedayObject){
+			for (i=0; i < 5; i++){
+			var weatherDate=fivedayObject.list[i*8].dt_txt
+			$(".date"+i).text("("+weatherDate+")")
+			var weatherIcon=fivedayObject.list[i*8].weather[0].icon
+			$(".icon"+i).text(weatherIcon)
+			var fivedayTemp=fivedayObject.list[i*8].main.temp
+			var fivedayTempF=Math.round(10*((fivedayTemp-273.15)*(9/5)+32))/10
+			$(".temp"+i).text("Temperature: "+fivedayTempF+" °F")
+			var fivedayHumidity=fivedayObject.list[i*8].main.humidity
+			$(".humidity"+i).text("Humidity: "+fivedayHumidity+"%")
+		}
+	})
+
+
+var d1=$("<div>");
+//<div></div>
+var d2=$("<div>");
+//<div></div>
+var p1=$("<p>");
+//<p></p>
+var p2;
+var p3;
+var p4;
+
+//append the div and data together
+
+d1.append(d2);
+d2.append(p1);
+d2.append(p2);
+d2.append(p3);
+d2.append(p4);
+
+//append via html #fiveday
+$("#fiveday").append(d1)
+}
+fiveday("austin")
+
+
+//3. submitbtn passing the cityname
+	//a. make onclick fx for btn work
+	//b. grab the city value
+	//c. push cityname to an array, 
+	//d. then set to localstorage
+
+	//4. create a fx generateBtn
+		//a. then get localstorage 
+		//b. run a forloop to create btns dynamically
+		// for each btn have a unique id or class to have an onclick trigger event
+
+		//c. when user onclicks the cities, grab that city name and 
+			//call the 1day function passing in the cityname
+			//call the 5day function passing in the cityname
+    
+  </script>
+</body>
+
+</html>
+
+
